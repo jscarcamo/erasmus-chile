@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Erasmus Chile · Buscador de oportunidades académicas en Europa</title>
+<meta name="description" content="Explora másteres Erasmus Mundus desde Chile, compara plazos y requisitos y visita el sitio de cada programa.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +20,12 @@ html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{margin:0;font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 button{font:inherit;cursor:pointer}
-:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:8px}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 2px #fff}
+.top :focus-visible,footer :focus-visible{outline-color:var(--sun)}
+.searchbox:focus-within{outline:3px solid var(--sun);outline-offset:3px}
+.searchbox input:focus-visible{outline:0;box-shadow:none}
+.skip-link{position:fixed;top:8px;left:8px;z-index:500;padding:12px 16px;border-radius:10px;background:var(--ink);color:#fff;transform:translateY(calc(-100% - 16px))}
+.skip-link:focus{transform:none}
 .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
 
 /* NAV */
@@ -30,7 +36,6 @@ button{font:inherit;cursor:pointer}
 .nav-links{display:flex;gap:4px}
 .nav-links a{text-decoration:none;font-weight:700;font-size:.88rem;color:var(--muted);padding:8px 12px;border-radius:999px}
 .nav-links a:hover{background:#fff;color:var(--ink)}
-@media(max-width:560px){.nav-links a:nth-child(n+3){display:none}}
 
 /* CABECERA COMPACTA */
 .top{position:relative;overflow:hidden;color:#fff;background:linear-gradient(135deg,#1e1b8f 0%,#3b2bd9 55%,#0ea5e9 100%);border-radius:0 0 30px 30px;padding:26px 0 74px}
@@ -286,9 +291,41 @@ footer ul{margin:0;padding-left:18px}
 }
 @media(max-width:420px){.tiles{grid-template-columns:1fr}.keys{grid-template-columns:1fr 1fr}}
 
+/* Acceso directo y navegación móvil */
+.card{min-width:0}
+.card h3{overflow-wrap:anywhere}
+.card .keys{grid-template-columns:repeat(2,minmax(0,1fr))}
+.k{min-width:0;overflow-wrap:anywhere}
+.card .actions .btn.pri{flex:2 1 160px}
+.card .actions .btn.sec{flex:1 1 100px}
+.sh-in>.btn{justify-self:stretch}
+.sh-actions .row .btn{min-width:0;flex:1 1 145px}
+@media(max-width:560px){
+  html{scroll-padding-top:112px}
+  .nav .wrap{height:auto;flex-direction:column;align-items:stretch;gap:2px;padding-top:8px;padding-bottom:4px}
+  .nav-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .nav-links a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;padding:4px;font-size:.78rem}
+  .searchbox button{display:block;padding:10px 12px;min-height:44px}
+  .searchbox input{font-size:16px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+}
+/* Tarjetas para compartir */
+.card-tools{display:flex;flex:none;gap:6px;align-items:center}
+.share-small{border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--brand);width:40px;height:40px;display:grid;place-items:center}
+.share-small:hover{background:#f0efff}
+.share-panel{padding:16px;border:1px solid var(--line);border-radius:20px;background:#f4f5fb;display:grid;gap:12px}
+.share-panel[hidden]{display:none}
+.share-panel h3,.share-panel p{margin:0}
+.share-panel p{color:var(--muted);font-size:.86rem}
+.share-canvas{display:block;width:100%;max-width:360px;height:auto;justify-self:center;border-radius:12px;box-shadow:0 6px 22px #18204b22}
+.share-controls{display:flex;flex-wrap:wrap;gap:8px}
+.share-controls .btn{flex:1 1 150px;min-width:0}
+.share-controls .btn:disabled{opacity:.6;cursor:wait}
+.share-controls .btn[hidden]{display:none}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <header class="nav">
   <div class="wrap">
@@ -319,7 +356,7 @@ footer ul{margin:0;padding-left:18px}
   </div>
 </div>
 
-<main class="wrap">
+<main class="wrap" id="main-content" tabindex="-1">
   <div class="panel" id="programas">
     <div class="fl scrollrow"><span class="lbl">Convocatoria</span><span id="statusChips" class="fl" style="margin:0"></span></div>
     <div class="fl scrollrow"><span class="lbl">Área</span><span id="areaChips" class="fl" style="margin:0"></span></div>
@@ -584,7 +621,7 @@ function card(p){
   <div class="bar" style="--bar:${col}"></div>
   <div class="in">
     <div class="row1"><div class="badges">${badges}</div>
-      <button class="fav" type="button" data-fav="${p.id}" aria-pressed="${FAV.has(p.id)}" aria-label="Guardar ${esc(p.short)}" title="Guardar">${FAV.has(p.id)?"★":"☆"}</button></div>
+      <div class="card-tools"><button class="share-small" type="button" data-share="${p.id}" aria-label="Crear tarjeta para compartir ${esc(p.short)}" title="Crear tarjeta para compartir"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4m-6.6 7 6.6 4"/></svg></button><button class="fav" type="button" data-fav="${p.id}" aria-pressed="${FAV.has(p.id)}" aria-label="Guardar ${esc(p.short)}" title="Guardar">${FAV.has(p.id)?"★":"☆"}</button></div></div>
     <div><div class="short">${esc(p.short)}</div><h3>${esc(p.title)}</h3></div>
     <p class="sum">${esc(p.sum)}</p>
     <div class="keys">
@@ -595,8 +632,8 @@ function card(p){
     </div>
     <div class="flags">${flags}</div>
     <div class="actions">
-      <button class="btn pri brand" type="button" data-sheet="${p.id}">Ver ficha para postular</button>
-      <a class="btn sec" href="${p.url}" target="_blank" rel="noopener" aria-label="Sitio del programa ${esc(p.short)} (se abre en otra pestaña)">Sitio ↗</a>
+      <a class="btn pri brand" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Ir al sitio de ${esc(p.short)} (se abre en otra pestaña)">Ir al programa ↗</a>
+      <button class="btn sec" type="button" data-sheet="${p.id}" aria-label="Ver ficha de ${esc(p.short)}">Ver ficha</button>
     </div>
   </div></article>`;
 }
@@ -639,6 +676,19 @@ function sheetHtml(p){
     <div><div class="badges" style="margin-bottom:8px">${badges}</div>
       <div class="short">${esc(p.short)}</div><h2 id="shT">${esc(p.title)}</h2><p class="en">${esc(p.en)}</p></div>
     <p class="sum" style="font-size:1rem;margin:0;display:block">${esc(p.sum)}</p>
+    <a class="btn big brand" href="${esc(p.url)}" target="_blank" rel="noopener" aria-label="Ir al sitio de ${esc(p.short)} (se abre en otra pestaña)">Ir al programa ↗</a>
+    <button class="btn sec" type="button" data-share="${p.id}">Crear tarjeta para compartir</button>
+    <section class="share-panel" id="sharePanel" hidden aria-labelledby="shareTitle">
+      <h3 id="shareTitle" tabindex="-1">Comparte esta oportunidad</h3>
+      <p>Una imagen lista para enviar, junto con el enlace original del programa. Comprueba siempre los plazos en su web.</p>
+      <canvas id="shareCanvas" class="share-canvas" width="1080" height="1350" role="img" aria-label="Tarjeta informativa de ${esc(p.title)}"></canvas>
+      <div class="share-controls">
+        <button class="btn brand" type="button" data-download-card="${p.id}" disabled>Descargar PNG</button>
+        <button class="btn sec" type="button" data-native-card="${p.id}" hidden disabled>Compartir imagen</button>
+        <button class="btn sec" type="button" data-whatsapp-card="${p.id}">Enviar enlace por WhatsApp</button>
+      </div>
+      <p id="shareHint" role="status">Preparando la imagen…</p>
+    </section>
     <div class="sh-sec"><h4>Lo esencial para postular</h4>
       <div class="tiles">${tClose}${tAppl}${tStart}${tLang}${tBeca}${tDur}${tAud}</div></div>
     ${sites}
@@ -647,12 +697,13 @@ function sheetHtml(p){
     ${p.note?`<div class="note">⚠️ ${esc(p.note)}</div>`:""}
     ${missHtml}
     <div class="sh-actions">
-      <a class="btn big brand" href="${p.url}" target="_blank" rel="noopener">Ir al programa y postular ↗</a>
+      <a class="btn big brand" href="${esc(p.url)}" target="_blank" rel="noopener">Ir al programa ↗</a>
       <div class="row">
         ${p.ov?`<a class="btn sec" href="${p.ov}" target="_blank" rel="noopener">Ficha Erasmus+ ↗</a>`:""}
         ${p.geo.length?`<button class="btn sec" type="button" data-focus="${p.id}" data-fromsheet="1">📍 Ver en el mapa</button>`:""}
         <button class="btn sec" type="button" data-fav="${p.id}" data-keepsheet="1" aria-pressed="${FAV.has(p.id)}">${FAV.has(p.id)?"★ Guardado":"☆ Guardar"}</button>
-        <button class="btn sec" type="button" data-copy="${p.id}">🔗 Copiar enlace</button>
+        <button class="btn sec" type="button" data-copy="${p.id}">Copiar web del programa</button>
+
       </div>
     </div>
     <div class="srcline">${hasDates?"✔ Fecha de cierre leída en el sitio oficial del programa (16 nov 2026).":"Sin fecha de cierre publicada en el sitio al 16 nov 2026."} Los plazos cambian: confirma en el sitio antes de postular.</div>
@@ -670,7 +721,8 @@ function openSheet(id){
 function closeSheet(){
   $("#sheet").hidden=true; openId=null;
   if(!fsOn) document.body.classList.remove("noscroll");
-  if(lastFocus&&lastFocus.focus) try{lastFocus.focus();}catch(e){}
+  const target=lastFocus&&lastFocus.isConnected&&lastFocus!==document.body?lastFocus:$("#q");
+  if(target) target.focus();
 }
 let toastT=null;
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2200); }
@@ -678,6 +730,100 @@ function copyText(txt){
   try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>toast("Enlace copiado"),()=>toast("No se pudo copiar: "+txt)); return; } }catch(e){}
   try{ const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); const ok=document.execCommand("copy"); ta.remove(); toast(ok?"Enlace copiado":"No se pudo copiar: "+txt); }catch(e){ toast("No se pudo copiar: "+txt); }
 }
+
+
+/* Tarjetas PNG locales: sin servicios externos ni datos personales. */
+let shareImage=null;
+function shareLines(ctx,value,width){
+  const words=String(value||"").trim().split(/\s+/), lines=[]; let line="";
+  for(const word of words){
+    const next=line?line+" "+word:word;
+    if(line&&ctx.measureText(next).width>width){ lines.push(line); line=word; }
+    else line=next;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+function shareText(ctx,value,x,y,width,size,maxLines,color,weight=600){
+  ctx.font=weight+" "+size+"px Arial, sans-serif"; ctx.fillStyle=color;
+  const lines=shareLines(ctx,value,width);
+  const shown=lines.slice(0,maxLines);
+  if(lines.length>maxLines){
+    let last=shown[maxLines-1];
+    while(last.length&&ctx.measureText(last+"…").width>width) last=last.slice(0,-1);
+    shown[maxLines-1]=last.trimEnd()+"…";
+  }
+  shown.forEach((line,i)=>ctx.fillText(line,x,y+i*size*1.22,width));
+  return y+shown.length*size*1.22;
+}
+function drawShareCard(canvas,p){
+  const ctx=canvas.getContext("2d");
+  if(!ctx) throw new Error("Canvas no disponible");
+  const navy="#15194f", blue="#3b2bd9", muted="#475569";
+  const gradient=ctx.createLinearGradient(0,0,1080,380);
+  gradient.addColorStop(0,"#1e1b8f"); gradient.addColorStop(1,"#3b2bd9");
+  ctx.fillStyle="#f5f6fb"; ctx.fillRect(0,0,1080,1350);
+  ctx.fillStyle=gradient; ctx.fillRect(0,0,1080,280);
+  ctx.fillStyle="#ffd23f"; ctx.fillRect(64,61,64,8);
+  shareText(ctx,"ERASMUS CHILE",64,111,850,33,1,"#ffffff",800);
+  shareText(ctx,"OPORTUNIDADES ACADÉMICAS EN EUROPA",64,157,952,25,1,"#dce2ff",700);
+  shareText(ctx,p.areas.map(a=>AREAS[a].n).join(" · "),64,226,952,30,1,"#ffd23f",700);
+  ctx.fillStyle="#fff"; ctx.fillRect(44,250,992,920);
+  shareText(ctx,p.short,80,314,920,30,1,blue,800);
+  let titleSize=58;
+  while(titleSize>42){
+    ctx.font="800 "+titleSize+"px Arial, sans-serif";
+    if(shareLines(ctx,p.title,920).length<=3) break;
+    titleSize-=2;
+  }
+  let y=shareText(ctx,p.title,80,380,920,titleSize,4,navy,800);
+  y=Math.max(y+12,565);
+  const country=p.c.length?p.c.map(c=>CN[c]||c).join(" · "):"Consultar en el programa";
+  const deadline=closeInfo(p);
+  const blocks=[
+    ["PAÍSES DEL CONSORCIO",country],
+    ["CIERRE DE POSTULACIÓN",deadline.txt+(deadline.sub?" · "+deadline.sub:"")],
+    ["BECA Y COSTOS",p.beca||"Sin información publicada; consulta el sitio del programa."]
+  ];
+  for(const [label,value] of blocks){
+    ctx.fillStyle="#e4e7f0";ctx.fillRect(80,y-12,920,2);
+    shareText(ctx,label,80,y+22,920,25,1,muted,800);
+    y=shareText(ctx,value,80,y+65,920,34,label==="BECA Y COSTOS"?3:2,navy,600)+22;
+  }
+  ctx.fillStyle=navy;ctx.fillRect(0,1170,1080,180);
+  shareText(ctx,"Busca el programa: "+p.short,64,1220,952,30,1,"#ffffff",800);
+  shareText(ctx,"jscarcamo.github.io/erasmus-chile/",64,1262,952,28,1,"#ffd23f",700);
+  shareText(ctx,"Información orientativa · confirma plazos y becas en la web oficial.",64,1310,952,23,1,"#dce2ff",500);
+}
+function openShareCard(id){
+  const p=P.find(x=>x.id===id); if(!p) return;
+  if(openId!==id||$("#sheet").hidden) openSheet(id);
+  const panel=$("#sharePanel"), canvas=$("#shareCanvas"), hint=$("#shareHint");
+  panel.hidden=false; shareImage=null;
+  const download=panel.querySelector("[data-download-card]"), native=panel.querySelector("[data-native-card]");
+  download.disabled=true;native.disabled=true;native.hidden=true;
+  try{
+    drawShareCard(canvas,p);
+    canvas.toBlob(blob=>{
+      if(!panel.isConnected||openId!==id) return;
+      if(!blob){hint.textContent="No se pudo generar la imagen; puedes compartir el enlace.";return;}
+      const file=new File([blob],"erasmus-"+id+".png",{type:"image/png"});
+      shareImage={id,file,blob};
+      download.disabled=false;
+      if(navigator.canShare&&navigator.share){try{native.hidden=!navigator.canShare({files:[file]});native.disabled=native.hidden;}catch(_){}}
+      hint.textContent=native.hidden?"Descarga la imagen y adjúntala en tu chat.":"Puedes enviar la imagen directamente desde este dispositivo.";
+    },"image/png");
+  }catch(_){hint.textContent="No se pudo generar la imagen; puedes compartir el enlace.";}
+  $("#shareTitle").focus({preventScroll:true});
+  panel.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+function downloadShareCard(id){
+  if(!shareImage||shareImage.id!==id) return;
+  const url=URL.createObjectURL(shareImage.blob), a=document.createElement("a");
+  a.href=url;a.download=shareImage.file.name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+function shareProgramText(p){return p.title+"\n"+p.url+"\nConfirma plazos y requisitos en el sitio del programa.";}
 
 /* ---------- Filtrado ---------- */
 function visible(){
@@ -904,6 +1050,18 @@ document.addEventListener("click",e=>{
   if(t.classList.contains("sheet-x")||d.sheetclose){ closeSheet(); return; }
   if(d.sheet){ openSheet(d.sheet); return; }
   if(d.copy){ const p=P.find(x=>x.id===d.copy); if(p) copyText(p.url); return; }
+  if(d.share){ openShareCard(d.share); return; }
+  if(d.downloadCard){ downloadShareCard(d.downloadCard); return; }
+  if(d.nativeCard){
+    const p=P.find(x=>x.id===d.nativeCard);
+    if(!p||!shareImage||shareImage.id!==p.id) return;
+    navigator.share({files:[shareImage.file],text:shareProgramText(p)}).catch(e=>{if(e.name!=="AbortError") toast("No se pudo compartir; descarga la imagen.");}); return;
+  }
+  if(d.whatsappCard){
+    const p=P.find(x=>x.id===d.whatsappCard);
+    if(p) window.open("https://wa.me/?text="+encodeURIComponent(shareProgramText(p)),"_blank","noopener,noreferrer");
+    return;
+  }
   if(d.rm){
     const k=d.rm;
     if(k==="st") S.status="all"; else if(k==="q"){ S.q=""; $("#q").value=""; }
@@ -915,7 +1073,16 @@ document.addEventListener("click",e=>{
   if(d.more){ S.allCountries=!S.allCountries; render(); return; }
   if(d.st){ S.status=(S.status===d.st&&d.st!=="all")?"all":d.st; render(); return; }
   if(d.sp){ S[d.sp]=!S[d.sp]; render(); return; }
-  if(d.fav){ FAV.has(d.fav)?FAV.delete(d.fav):FAV.add(d.fav); saveFav(); render(true); if(d.keepsheet&&openId){ const p=P.find(x=>x.id===openId); $("#sheetCard").innerHTML=sheetHtml(p); const x=$(".sheet-x"); } return; }
+  if(d.fav){
+    FAV.has(d.fav)?FAV.delete(d.fav):FAV.add(d.fav); saveFav(); render(true);
+    if(d.keepsheet&&openId){
+      const p=P.find(x=>x.id===openId); $("#sheetCard").innerHTML=sheetHtml(p);
+      $("#sheetCard [data-fav]")?.focus();
+    }else{
+      (document.getElementById("p-"+d.fav)?.querySelector(".fav")||$("#reset"))?.focus();
+    }
+    return;
+  }
   if(d.morecards){ S.limit+=PAGE; render(true); return; }
   if(d.allcards){ S.limit=1e9; render(true); return; }
   if(d.focus){
@@ -944,6 +1111,8 @@ $("#searchForm").addEventListener("submit",e=>{ e.preventDefault(); render(); co
 $("#sort").addEventListener("change",e=>{ S.sort=e.target.value; render(); });
 
 renderStrip(); renderChl(); render(); applyView();
+const sharedId=new URLSearchParams(location.search).get("programa");
+if(sharedId&&P.some(p=>p.id===sharedId)) openSheet(sharedId);
 </script>
 </body>
 </html>
